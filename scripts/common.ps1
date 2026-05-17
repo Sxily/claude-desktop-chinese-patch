@@ -85,7 +85,14 @@ function New-RuntimeTranslationPatches {
         @{ Kind = "title"; Prefix = 'title:"'; Suffix = '"' },
         @{ Kind = "cowork"; Prefix = 'cowork:"'; Suffix = '"' },
         @{ Kind = "placeholder"; Prefix = 'placeholder:"'; Suffix = '"' },
-        @{ Kind = "aria-label"; Prefix = 'aria-label:"'; Suffix = '"' }
+        @{ Kind = "aria-label"; Prefix = 'aria-label:"'; Suffix = '"' },
+        @{ Kind = "group"; Prefix = 'group:"'; Suffix = '"' },
+        @{ Kind = "banner"; Prefix = 'banner:"'; Suffix = '"' },
+        @{ Kind = "description"; Prefix = 'description:"'; Suffix = '"' },
+        @{ Kind = "hint"; Prefix = 'hint:"'; Suffix = '"' },
+        @{ Kind = "children"; Prefix = 'children:"'; Suffix = '"' },
+        @{ Kind = "recents"; Prefix = 'recents:"'; Suffix = '"' },
+        @{ Kind = "shared"; Prefix = 'shared:"'; Suffix = '"' }
     )
 
     foreach ($source in @($Translations.Keys | Sort-Object)) {
@@ -465,7 +472,13 @@ function Scan-MissingTranslations {
         @{ kind = "defaultMessage"; regex = 'defaultMessage:"([^"]+)"' },
         @{ kind = "label"; regex = 'label:"([^"]+)"' },
         @{ kind = "title"; regex = 'title:"([^"]+)"' },
-        @{ kind = "cowork"; regex = 'cowork:"([^"]+)"' }
+        @{ kind = "cowork"; regex = 'cowork:"([^"]+)"' },
+        @{ kind = "placeholder"; regex = 'placeholder:"([^"]+)"' },
+        @{ kind = "group"; regex = 'group:"([^"]+)"' },
+        @{ kind = "banner"; regex = 'banner:"([^"]+)"' },
+        @{ kind = "description"; regex = 'description:"([^"]+)"' },
+        @{ kind = "hint"; regex = 'hint:"([^"]+)"' },
+        @{ kind = "children"; regex = 'children:"([^"]+)"' }
     )
 
     foreach ($file in (Get-AssetFiles -AssetsDir $AssetsDir)) {
