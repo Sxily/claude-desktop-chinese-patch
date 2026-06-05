@@ -1,4 +1,7 @@
-# 使用说明
+# Claude Desktop 中文补丁使用说明
+
+项目名：`Claude Desktop 中文补丁 / Chinese Patch`。
+搜索关键词：`Claude Desktop 中文`、`Claude Desktop 汉化`、`Claude Desktop 中文补丁`、`Claude Desktop zh-CN`、`Claude Desktop Chinese Patch`。
 
 ## 适用范围
 

@@ -1,5 +1,5 @@
 {
-  "projectName": "claude-desktop-zh-localization",
+  "projectName": "claude-desktop-chinese-patch",
   "locale": "zh-CN",
   "backupDirName": "backups",
   "missingTranslationsPath": "locales\\missing-zh-CN.json",

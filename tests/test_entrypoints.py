@@ -85,10 +85,13 @@ class EntrypointTests(unittest.TestCase):
     def test_readme_describes_version_adaptive_flow(self) -> None:
         readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
 
+        self.assertIn("# Claude Desktop 中文补丁 / Chinese Patch", readme)
+        self.assertIn("Claude Desktop 汉化", readme)
+        self.assertIn("Claude Desktop Chinese Patch", readme)
         self.assertIn("自动发现", readme)
-        self.assertIn("缺失汉化清单", readme)
+        self.assertIn("missing-zh-CN.json", readme)
         self.assertIn("scan_missing.ps1", readme)
-        self.assertIn("不会解包、重打包或修改 `app.asar`", readme)
+        self.assertIn("不修改 `app.asar`", readme)
         self.assertNotIn("文件名哈希需与你的 Claude 版本匹配", readme)
 
 

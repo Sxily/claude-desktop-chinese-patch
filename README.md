@@ -1,33 +1,51 @@
-# Claude Desktop 简体中文汉化补丁
+# Claude Desktop 中文补丁 / Chinese Patch
 
-一键将 Claude Desktop Windows 版界面汉化为简体中文。当前项目聚焦官方 locale、Statsig locale 和可见 UI runtime 文案补丁；不会解包、重打包或修改 `app.asar`。
+让 Claude Desktop Windows 版界面切换到简体中文的本地化补丁工具。项目面向搜索 `Claude Desktop 中文`、`Claude Desktop 汉化`、`Claude Desktop 中文补丁`、`Claude Desktop zh-CN`、`Claude Desktop Chinese Patch`、`Claude Desktop localization` 的用户。
 
-## 使用方法
+当前补丁聚焦官方 locale、Statsig locale 和可见 UI runtime 文案；不会解包、重打包或修改 `app.asar`。
+
+## 适用场景
+
+- 你使用 Windows MSIX/AppX 版 Claude Desktop。
+- 你希望 Claude Desktop 设置页、按钮、提示、侧边栏等可见界面尽量中文化。
+- 你需要一个可验证、可回滚、随 Claude Desktop 版本变化自动适配的中文补丁。
+
+## 快速使用
 
 1. 完全退出 Claude Desktop，包括系统托盘里的 Claude。
 2. 右键 `汉化应用.bat`，选择以管理员身份运行。
 3. 脚本会应用可见界面中文化修复，并自动运行验证。
-4. 重新打开 Claude Desktop，在设置里选择中文。
+4. 重新打开 Claude Desktop，在 Settings / Language 中选择中文。
 
 需要恢复英文界面时，右键 `汉化回滚.bat` 并以管理员身份运行。
 
-## 版本自适应
+## 它做什么
 
-脚本会自动发现 `C:\Program Files\WindowsApps\Claude_*` 下最新可用的 Claude Desktop 安装，要求资源目录包含 `ion-dist\i18n` 和 `ion-dist\assets\v1`。`app.asar` 只作为 Claude 资源目录完整性的识别特征，不作为补丁目标。也可以在 `config.json` 的 `installDiscovery.manualInstallRoot` 中手动指定 `app\resources` 目录。
+- 自动发现 `C:\Program Files\WindowsApps\Claude_*` 下最新可用的 Claude Desktop 安装。
+- 复制并维护 `zh-CN` locale、overrides 和 Statsig 资源。
+- 使用 `patches\main-ui-patches.json` 对稳定 runtime 文案做精确替换。
+- 使用 `locales\runtime-zh-CN.translations.json` 覆盖没有进入官方 locale 的可见英文。
+- 生成 `locales\missing-zh-CN.json`，用于继续追踪残留英文候选。
+- 应用前备份原始文件，方便用 `汉化回滚.bat` 恢复。
 
-Runtime 补丁来自 `patches/main-ui-patches.json`。补丁规则只包含稳定的 `find` / `replace` 文本，不要求指定 bundle 文件名；应用时会遍历所有 JS/CSS 资源并报告命中、已应用和未命中数量。关键补丁未命中时脚本会停止并提示需要维护，避免静默写坏未知版本。
+## 它不做什么
 
-额外的可见界面文案翻译来自 `locales/runtime-zh-CN.translations.json`。脚本会把这个人工确认的翻译表自动转换成 `defaultMessage`、`label`、`title`、`placeholder`、`body`、`description` 等运行时补丁，用来覆盖设置页、按钮、提示、侧边栏等没有进入官方 locale 文件的英文。
+- 不修改 `app.asar`。
+- 不解包或重打包 Claude Desktop。
+- 不硬编码某个 Claude Desktop 版本号或 JS 文件名哈希。
+- 不把扫描清单里的代码标识、路由名、HTML 标签名当作 UI 文案强行翻译。
 
-## 缺失汉化清单
+## 验证覆盖率
 
-还有英文残留时，运行：
+开发或维护时推荐按顺序运行：
 
 ```powershell
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\scan_missing.ps1
+python -m unittest discover -s tests
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\scan_missing.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\verify_localization.ps1
 ```
 
-它会生成 `locales\missing-zh-CN.json` 缺失汉化清单，列出可见英文候选、来源文件和待填写的 `translation` 字段。确认翻译后，优先把稳定条目整理进 `locales\runtime-zh-CN.translations.json`；只有需要特殊精确匹配时，再放进 `patches\main-ui-patches.json`。
+当前验证目标是：单元测试通过、可见英文候选为 0、`verify_localization.ps1` 输出 `VERIFY OK`。
 
 ## 常用脚本
 
@@ -39,6 +57,8 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\scan_m
 - `scripts\detect_install.ps1`：检测当前 Claude Desktop 版本和资源路径。
 - `scripts\rollback_localization.ps1`：按最近一次备份回滚。
 
-## 安全策略
+## 维护入口
 
-应用前会备份原始 locale、JS/CSS 和对应 `.zst` 文件。对被修改的 JS/CSS，如果存在 `.zst` 缓存，脚本会改名为 `.bak`，让 Claude 加载明文补丁文件；回滚脚本会恢复最近一次备份。
+普通可见文案优先维护在 `locales\runtime-zh-CN.translations.json`。只有需要特殊精确匹配时，再放进 `patches\main-ui-patches.json`。
+
+如果 Claude Desktop 更新后出现英文残留，先运行 `scripts\scan_missing.ps1` 生成候选清单，再人工确认哪些是真正 UI 文案。

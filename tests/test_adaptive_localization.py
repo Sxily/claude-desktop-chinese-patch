@@ -44,6 +44,7 @@ class AdaptiveLocalizationTests(unittest.TestCase):
 
         self.assertNotIn("supportedInstallRoot", config)
         self.assertNotIn("applyTargets", config)
+        self.assertEqual(config["projectName"], "claude-desktop-chinese-patch")
         self.assertEqual(config["installDiscovery"]["windowsAppsRoot"], r"C:\Program Files\WindowsApps")
         self.assertIsNone(config["installDiscovery"]["manualInstallRoot"])
         self.assertEqual(config["locale"], "zh-CN")
