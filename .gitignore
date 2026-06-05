@@ -1,3 +1,11 @@
 backups/
 *.log
+*.exitcode
 .claude/
+.omc/
+tmp/
+test-temp/
+test-tmp-probe/
+__pycache__/
+*.py[cod]
+locales/sync-zh-CN-report.json

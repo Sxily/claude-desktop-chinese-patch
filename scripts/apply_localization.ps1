@@ -63,13 +63,26 @@ try {
     }
 
     Write-Host "[6/7] Copying zh-CN resources and applying runtime patches..." -ForegroundColor Cyan
-    Copy-Item -LiteralPath $artifacts.RootLocale -Destination $install.RootLocale -Force
+    Copy-Item -LiteralPath $artifacts.RootLocale -Destination $install.RootLocale -Force -ErrorAction SilentlyContinue
+    if (-not (Test-Path -LiteralPath $install.RootLocale -PathType Leaf)) {
+        Write-Host "  [WARN] Root zh-CN.json was not copied; continuing with ion i18n resources." -ForegroundColor Yellow
+    }
     Copy-Item -LiteralPath $artifacts.IonLocale -Destination $install.IonLocale -Force
     Copy-Item -LiteralPath $artifacts.IonLocaleZst -Destination $install.IonLocaleZst -Force
     Copy-Item -LiteralPath $artifacts.IonOverrides -Destination $install.IonOverrides -Force
     Copy-Item -LiteralPath $artifacts.IonOverridesZst -Destination $install.IonOverridesZst -Force
     Copy-Item -LiteralPath $artifacts.StatsigLocale -Destination $install.StatsigLocale -Force
     Copy-Item -LiteralPath $artifacts.StatsigLocaleZst -Destination $install.StatsigLocaleZst -Force
+
+    foreach ($localeCompressed in @($install.IonLocaleZst, $install.IonOverridesZst, $install.StatsigLocaleZst)) {
+        if (Test-Path -LiteralPath $localeCompressed) {
+            $localeCompressedBak = "$localeCompressed.bak"
+            if (Test-Path -LiteralPath $localeCompressedBak) {
+                Remove-Item -LiteralPath $localeCompressedBak -Force
+            }
+            Rename-Item -LiteralPath $localeCompressed -NewName ((Split-Path -Leaf $localeCompressed) + ".bak") -Force
+        }
+    }
 
     $fileReport = New-Object System.Collections.ArrayList
     foreach ($assetPath in $patchTargets) {
@@ -78,6 +91,10 @@ try {
             [void]$fileReport.Add([pscustomobject]@{ file = $assetPath; changes = $changes })
             $compressed = Get-CompressedAssetPath -AssetPath $assetPath
             if (Test-Path -LiteralPath $compressed) {
+                $compressedBak = "$compressed.bak"
+                if (Test-Path -LiteralPath $compressedBak) {
+                    Remove-Item -LiteralPath $compressedBak -Force
+                }
                 Rename-Item -LiteralPath $compressed -NewName ((Split-Path -Leaf $compressed) + ".bak") -Force
             }
         }
